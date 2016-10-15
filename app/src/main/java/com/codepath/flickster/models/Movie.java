@@ -38,6 +38,7 @@ public class Movie {
         backdropPath = jsonObject.getString("backdrop_path");
     }
 
+
     public static ArrayList<Movie> fromJSONArray (JSONArray array){
         ArrayList<Movie> results = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
