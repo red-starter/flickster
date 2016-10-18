@@ -39,8 +39,6 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
     public View getView(int position, View convertView, ViewGroup parent) {
         // get data item for position
         Movie movie = getItem(position);
-        // check the existing view being reused
-        ViewHolder holder;
         ViewHolder viewHolder; // view lookup cache stored in tag
 
         if (convertView == null) {
