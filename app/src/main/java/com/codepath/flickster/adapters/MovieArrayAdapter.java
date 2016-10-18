@@ -15,11 +15,21 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import static com.codepath.flickster.R.id.tvOverview;
+import static com.codepath.flickster.R.id.tvTitle;
+
 /**
  * Created by michaelsova on 10/13/16.
  */
 
-public class MovieArrayAdapter extends ArrayAdapter<Movie>{
+public class MovieArrayAdapter extends ArrayAdapter<Movie> {
+
+    // View lookup cache
+    private static class ViewHolder {
+        ImageView ivMovieImage;
+        TextView tvTitle;
+        TextView tvOverview;
+    }
 
     public MovieArrayAdapter(Context context, List<Movie> movies){
         super(context, android.R.layout.simple_list_item_1, movies);
@@ -30,21 +40,30 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie>{
         // get data item for position
         Movie movie = getItem(position);
         // check the existing view being reused
-        if (convertView == null){
-            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-            convertView = layoutInflater.inflate(R.layout.item_movie, parent, false);
-        }
-        //find the image view
-        ImageView ivImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
-        //clear out image from convert view
-        ivImage.setImageResource(0);
+        ViewHolder holder;
+        ViewHolder viewHolder; // view lookup cache stored in tag
 
-        TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-        TextView tvOverview = (TextView) convertView.findViewById(R.id.tvOverview);
+        if (convertView == null) {
+            // If there's no view to re-use, inflate a brand new view for row
+            viewHolder = new ViewHolder();
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.item_movie, parent, false);
+            viewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
+            viewHolder.tvOverview = (TextView) convertView.findViewById(tvOverview);
+            viewHolder.ivMovieImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
+            // Cache the viewHolder object inside the fresh view
+            convertView.setTag(viewHolder);
+        } else {
+            // View is being recycled, retrieve the viewHolder object from tag
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+
+        //clear out image from convert view
+        viewHolder.ivMovieImage.setImageResource(0);
 
         //populate the data
-        tvTitle.setText(movie.getOriginalTitle());
-        tvOverview.setText(movie.getOverview());
+        viewHolder.tvTitle.setText(movie.getOriginalTitle());
+        viewHolder.tvOverview.setText(movie.getOverview());
 
         String imagePath;
         int orientation = getContext().getResources().getConfiguration().orientation;
@@ -56,7 +75,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie>{
             imagePath = movie.getPosterPath();
         }
 
-        Picasso.with(getContext()).load(imagePath).into(ivImage);
+        Picasso.with(getContext()).load(imagePath).into(viewHolder.ivMovieImage);
         return convertView;
     }
 }
